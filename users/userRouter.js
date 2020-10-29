@@ -45,17 +45,8 @@ router.get("/", (req, res) => {
   });
 });
 
-router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  userDb.getById(id).then((user) => {
-    if (!user) {
-      res.status(400).json({
-        message: "User with the specified ID does not exist.",
-      });
-    } else {
-      res.status(200).json(user);
-    }
-  });
+router.get("/:id", [validateUserId], (req, res) => {
+  res.status(200).json(req.user);
 });
 
 router.get("/:id/posts", (req, res) => {
@@ -106,9 +97,24 @@ router.put("/:id", (req, res) => {
 //custom middleware
 
 function validateUserId(req, res, next) {
-  // do your magic!
-}
+  const { id } = req.params;
 
+  userDb
+    .getById(id)
+    .then((data) => {
+      if (data) {
+        req.user = data;
+        next();
+      } else {
+        res.status(400).send("The user with the specified ID does not exist.");
+        next();
+      }
+    })
+    .catch((err) => {
+      res.status(500).send("Something didn't work.");
+      next();
+    });
+}
 function validateUser(req, res, next) {
   // do your magic!
 }
