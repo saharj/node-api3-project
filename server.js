@@ -22,7 +22,10 @@ server.use((err, req, res, next) => {
 });
 
 server.get("/", (req, res) => {
-  res.send(`<h2>Let's write some middleware!</h2>`);
+  res.send(`
+  <h2>Let's write some middleware!</h2>
+  <p>Here we are...</p>
+  `);
 });
 
 module.exports = server;
